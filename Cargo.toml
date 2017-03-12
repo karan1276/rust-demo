@@ -1,0 +1,7 @@
+[package]
+name = "demo"
+version = "0.1.0"
+authors = ["Karan Sharma <karan1276@gmail.com>"]
+
+[dependencies]
+threadpool = "1.3.2"
