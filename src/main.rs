@@ -1,23 +1,25 @@
 extern crate threadpool;
 
+use threadpool::ThreadPool;
+use std::sync::mpsc::channel;
+
 fn main() {
-    //println!("Hello, world!");
+    let t_jobs = 11;
+    let t_worker = 3;
+    let pool = ThreadPool::new(t_worker);
+    let (tx,rx) = channel();
 
-    use std::sync::mpsc::sync_channel;
-    use std::thread;
-    use threadpool::ThreadPool;
-
-    let (tx, rx) = sync_channel(0);
-    let mut pool = ThreadPool::new_with_name("worker".into(), 2);
-    for _ in 0..2 {
+    for i in 0..t_jobs {
         let tx = tx.clone();
         pool.execute(move || {
-            let name = thread::current().name().unwrap().to_owned();
-            tx.send(name).unwrap();
+            let answer = i * i;
+            tx.send(answer).unwrap();
         });
     }
 
-    for thread_name in rx.iter().take(2) {
-        assert_eq!("worker", thread_name);
+    println!("now we begin");
+
+    for _ in 0..t_jobs {
+        println!("{}", rx.recv().unwrap());
     }
 }
